@@ -1,95 +1,83 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+import { useState, useRef } from "react";
+
+const initialTodos = [
+  {
+    id: 1,
+    name: "Calculus HW2",
+    done: false,
+  },
+  {
+    id: 2,
+    name: "Side Project Figma",
+    done: false,
+  },
+  {
+    id: 3,
+    name: "Course Slide",
+    done: false,
+  },
+  {
+    id: 4,
+    name: "Write Blog Post",
+    done: true,
+  },
+  {
+    id: 5,
+    name: "OR HW",
+    done: true,
+  },
+];
 
 export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+  const [todos, setTodos] = useState(initialTodos);
+  const inputRef = useRef(null);
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+  function Todo({ todo }) {
+    return (
+      <div className={`todo ${todo.done ? 'task_finished' : ''}`}>
+        <button className="checkbox" onClick={() => {
+          const newTodos = todos.map((t) => {
+            if (t.id === todo.id) {
+              return {
+                ...t, /* 展開 t */
+                done: !t.done, /* 複寫 done */
+              }
+            }
+            return t;
+          });
+          setTodos(newTodos)
+        }}></button>
+        <div className="name">{todo.name}</div>
+      </div>
+    )
+  }
+
+  return (
+    <div id="main_box">
+      <h1 className="title">TODO</h1>
+      <div id="input_box">
+        <button id="add_todo" onClick={() => {
+          // console.log(inputRef.current.value)
+          setTodos([{
+            id: todos.length + 1,
+            name: inputRef.current.value,
+            done: false
+          }, ...todos])
+          inputRef.current.value = '';
+        }}>+</button>
+        <input
+          ref={inputRef}
+          type="text"
+          className="input"
+          placeholder="Create a new todo..."
         />
       </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      <div id="list_box">
+        {todos.map((todo) => (
+          <Todo todo={todo} key={todo.id} />
+        ))}
       </div>
-    </main>
+    </div>
   );
 }
